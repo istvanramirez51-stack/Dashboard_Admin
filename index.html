@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlashAdmin — Sign In</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="login-page">
+
+  <!-- Animated Background -->
+  <div class="login-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Login Container -->
+  <div class="login-wrapper">
+
+    <!-- Brand Side -->
+    <div class="login-brand">
+      <div class="brand-content">
+        <div class="brand-logo">
+          <div class="logo-icon-lg"><i class="fa-solid fa-bolt"></i></div>
+          <span>SlashAdmin</span>
+        </div>
+        <h2>The modern way to manage your business</h2>
+        <p>Real-time analytics, user management, and powerful tools — all in one place.</p>
+        <div class="brand-features">
+          <div class="brand-feat"><i class="fa-solid fa-shield-halved"></i> Enterprise Security</div>
+          <div class="brand-feat"><i class="fa-solid fa-chart-line"></i> Advanced Analytics</div>
+          <div class="brand-feat"><i class="fa-solid fa-bolt"></i> Lightning Fast</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+      <div class="login-card-inner">
+        <div class="login-logo">
+          <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
+          <span class="logo-text">SlashAdmin</span>
+        </div>
+
+        <div class="login-header">
+          <h1>Welcome back</h1>
+          <p>Sign in to your admin dashboard</p>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="error-alert" id="loginAlert" style="display:none">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="loginAlertMsg">Invalid email or password.</span>
+        </div>
+
+        <!-- Success Alert -->
+        <div class="success-alert" id="loginSuccess" style="display:none">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Login successful! Redirecting...</span>
+        </div>
+
+        <form id="loginForm" class="login-form" novalidate>
+          <!-- Email -->
+          <div class="form-group" id="emailGroup">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper">
+              <i class="fa-regular fa-envelope input-icon"></i>
+              <input type="email" id="email" name="email" 
+                     placeholder="admin@adminx.com" autocomplete="email">
+            </div>
+            <span class="field-error" id="emailError"></span>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group" id="passwordGroup">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password" name="password" 
+                     placeholder="Enter your password" autocomplete="current-password">
+              <button type="button" class="toggle-pw" id="togglePw" title="Toggle password">
+                <i class="fa-regular fa-eye" id="eyeIcon"></i>
+              </button>
+            </div>
+            <span class="field-error" id="passwordError"></span>
+          </div>
+
+          <!-- Options -->
+          <div class="form-options">
+            <label class="check-label">
+              <input type="checkbox" id="rememberMe">
+              <span class="checkmark"></span>
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link" onclick="event.preventDefault(); alert('Demo: password reset not available.')">Forgot password?</a>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-login" id="loginBtn">
+            <span class="btn-text">Sign In</span>
+            <span class="btn-loader" style="display:none">
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Signing in...
+            </span>
+          </button>
+        </form>
+
+        <!-- Demo Credentials -->
+        <div class="demo-creds">
+          <div class="demo-label"><i class="fa-solid fa-key"></i> Demo Credentials</div>
+          <div class="demo-info">
+            <div><span>Email:</span> <code>admin@adminx.com</code></div>
+            <div><span>Password:</span> <code>Admin123!</code></div>
+          </div>
+          <button class="btn-autofill" onclick="autofillDemo()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Autofill Demo
+          </button>
+        </div>
+
+        <p class="login-footer">SlashAdmin © 2026 · All rights reserved</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (localStorage.getItem('adminx_session')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    function autofillDemo() {
+      document.getElementById('email').value = 'admin@adminx.com';
+      document.getElementById('password').value = 'Admin123!';
+      document.getElementById('email').dispatchEvent(new Event('input'));
+      document.getElementById('password').dispatchEvent(new Event('input'));
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleLogin();
+    });
+
+    document.getElementById('togglePw').addEventListener('click', function() {
+      const pw = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
+      } else {
+        pw.type = 'password';
+        icon.className = 'fa-regular fa-eye';
+      }
+    });
+
+    // Clear errors on input
+    ['email','password'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        document.getElementById(id + 'Error').textContent = '';
+        document.getElementById(id + 'Group').classList.remove('has-error');
+      });
+    });
+
+    function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      let valid = true;
+
+      // Clear errors
+      document.getElementById('emailError').textContent = '';
+      document.getElementById('passwordError').textContent = '';
+      document.getElementById('emailGroup').classList.remove('has-error');
+      document.getElementById('passwordGroup').classList.remove('has-error');
+      document.getElementById('loginAlert').style.display = 'none';
+
+      // Validate email
+      if (!email) {
+        document.getElementById('emailError').textContent = 'Email address is required.';
+        document.getElementById('emailGroup').classList.add('has-error');
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+        document.getElementById('emailGroup').classList.add('has-error');
+        valid = false;
+      }
+
+      // Validate password
+      if (!password) {
+        document.getElementById('passwordError').textContent = 'Password is required.';
+        document.getElementById('passwordGroup').classList.add('has-error');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      // Show loading
+      document.getElementById('loginBtn').querySelector('.btn-text').style.display = 'none';
+      document.getElementById('loginBtn').querySelector('.btn-loader').style.display = 'inline-flex';
+      document.getElementById('loginBtn').disabled = true;
+
+      // Simulate auth delay
+      setTimeout(function() {
+        // Valid credentials
+        if (email === 'admin@adminx.com' && password === 'Admin123!') {
+          const session = {
+            id: 1,
+            name: 'Immanuel_2k',
+            email: email,
+            role: 'Super Admin',
+            avatar: null,
+            loginTime: new Date().toISOString(),
+            theme: 'dark'
+          };
+          localStorage.setItem('adminx_session', JSON.stringify(session));
+
+          document.getElementById('loginSuccess').style.display = 'flex';
+          setTimeout(function() {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+        } else {
+          document.getElementById('loginBtn').querySelector('.btn-text').style.display = 'inline';
+          document.getElementById('loginBtn').querySelector('.btn-loader').style.display = 'none';
+          document.getElementById('loginBtn').disabled = false;
+          document.getElementById('loginAlert').style.display = 'flex';
+          document.getElementById('loginAlertMsg').textContent = 'Invalid email or password. Please try again.';
+          
+          // Shake animation
+          document.querySelector('.login-card-inner').classList.add('shake');
+          setTimeout(() => document.querySelector('.login-card-inner').classList.remove('shake'), 500);
+        }
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlashAdmin — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+
+  <!-- Auth guard runs first -->
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
+        <span class="logo-text">SlashAdmin</span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
+        <i class="fa-solid fa-angles-left" id="toggleIcon"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="#" class="nav-item active" data-section="overview">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span class="nav-label">Dashboard</span>
+        <span class="nav-badge" id="navBadgeOverview"></span>
+      </a>
+      <a href="#" class="nav-item" data-section="users">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="nav-label">Users</span>
+      </a>
+      <a href="#" class="nav-item" data-section="products">
+        <span class="nav-icon"><i class="fa-solid fa-box-open"></i></span>
+        <span class="nav-label">Products</span>
+      </a>
+      <a href="#" class="nav-item" data-section="orders">
+        <span class="nav-icon"><i class="fa-solid fa-receipt"></i></span>
+        <span class="nav-label">Orders</span>
+        <span class="nav-badge-count">3</span>
+      </a>
+
+      <div class="nav-section-label">System</div>
+      <a href="#" class="nav-item" data-section="settings">
+        <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+        <span class="nav-label">Settings</span>
+      </a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn">
+        <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+        <span class="nav-label">Logout</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatarWrap">
+        <div class="avatar-circle" id="sidebarAvatar">AJ</div>
+        <div class="online-dot"></div>
+      </div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebarUserName">Alex Johnson</div>
+        <div class="sidebar-user-role" id="sidebarUserRole">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+
+    <!-- NAVBAR -->
+    <header class="navbar" id="navbar">
+      <div class="navbar-left">
+        <button class="mobile-toggle" id="mobileToggle">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="page-title-wrap">
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          <div class="breadcrumb">
+            <span>SlashAdmin</span>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span id="breadcrumbCurrent">Dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="navbar-right">
+        <!-- Search -->
+        <div class="navbar-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search anything..." id="globalSearch">
+        </div>
+
+        <!-- Notifications -->
+        <div class="notif-wrap" id="notifWrap">
+          <button class="icon-btn notif-btn" id="notifBtn" title="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-badge" id="notifBadge">5</span>
+          </button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <button class="mark-all-read" id="markAllRead">Mark all read</button>
+            </div>
+            <div class="notif-list" id="notifList">
+              <!-- Populated by JS -->
+            </div>
+            <div class="notif-footer">
+              <a href="#" onclick="event.preventDefault()">View all notifications</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="icon-btn theme-btn" id="themeToggleBtn" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Profile -->
+        <div class="profile-wrap" id="profileWrap">
+          <button class="profile-btn" id="profileBtn">
+            <div class="avatar-sm" id="navAvatar">AJ</div>
+            <div class="profile-info">
+              <span class="profile-name" id="navUserName">Alex Johnson</span>
+              <span class="profile-role" id="navUserRole">Super Admin</span>
+            </div>
+            <i class="fa-solid fa-chevron-down profile-chevron"></i>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#" class="profile-dd-item" onclick="event.preventDefault(); navigateTo('settings')">
+              <i class="fa-solid fa-user-pen"></i> Edit Profile
+            </a>
+            <a href="#" class="profile-dd-item" onclick="event.preventDefault(); navigateTo('settings')">
+              <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <div class="dd-divider"></div>
+            <a href="#" class="profile-dd-item danger" onclick="event.preventDefault(); doLogout()">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main class="content-area">
+
+      <!-- ═══════════════ OVERVIEW ═══════════════ -->
+      <section class="dash-section active" id="section-overview">
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+          <div class="welcome-text">
+            <h2>Good <span id="timeOfDay">morning</span>, <span id="welcomeName">Alex</span> 👋</h2>
+            <p>Here's what's happening in your business today.</p>
+          </div>
+          <div class="welcome-date" id="welcomeDate"></div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards-grid">
+          <div class="stat-card card-blue">
+            <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="card-body">
+              <div class="card-label">Total Users</div>
+              <div class="card-value" id="statUsers">1,284</div>
+              <div class="card-delta positive"><i class="fa-solid fa-arrow-trend-up"></i> +12.5% this month</div>
+            </div>
+            <div class="card-sparkline"></div>
+          </div>
+          <div class="stat-card card-purple">
+            <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
+            <div class="card-body">
+              <div class="card-label">Total Products</div>
+              <div class="card-value" id="statProducts">348</div>
+              <div class="card-delta positive"><i class="fa-solid fa-arrow-trend-up"></i> +8.2% this month</div>
+            </div>
+          </div>
+          <div class="stat-card card-orange">
+            <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
+            <div class="card-body">
+              <div class="card-label">Total Orders</div>
+              <div class="card-value" id="statOrders">5,712</div>
+              <div class="card-delta negative"><i class="fa-solid fa-arrow-trend-down"></i> -3.1% this month</div>
+            </div>
+          </div>
+          <div class="stat-card card-green">
+            <div class="card-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+            <div class="card-body">
+              <div class="card-label">Revenue</div>
+              <div class="card-value" id="statRevenue">$84,291</div>
+              <div class="card-delta positive"><i class="fa-solid fa-arrow-trend-up"></i> +19.7% this month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <div class="chart-card main-chart">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Sales Overview</div>
+                <div class="chart-subtitle">Monthly revenue trend</div>
+              </div>
+              <div class="chart-controls">
+                <button class="chart-btn active" onclick="updateChart('monthly', this)">Monthly</button>
+                <button class="chart-btn" onclick="updateChart('weekly', this)">Weekly</button>
+                <button class="chart-btn" onclick="updateChart('daily', this)">Daily</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card side-chart">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Orders by Status</div>
+                <div class="chart-subtitle">Current distribution</div>
+              </div>
+            </div>
+            <div class="chart-wrap donut-wrap">
+              <canvas id="donutChart"></canvas>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><span class="dot" style="background:#4f8eff"></span> Delivered <strong>58%</strong></div>
+              <div class="legend-item"><span class="dot" style="background:#a78bfa"></span> Processing <strong>24%</strong></div>
+              <div class="legend-item"><span class="dot" style="background:#fb923c"></span> Pending <strong>12%</strong></div>
+              <div class="legend-item"><span class="dot" style="background:#f472b6"></span> Cancelled <strong>6%</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="bottom-row">
+          <!-- Recent Orders -->
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">Recent Orders</div>
+              <a href="#" class="see-all" onclick="event.preventDefault(); navigateTo('orders')">See all <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Top Products -->
+          <div class="top-products-card">
+            <div class="table-card-header">
+              <div class="table-card-title">Top Products</div>
+              <a href="#" class="see-all" onclick="event.preventDefault(); navigateTo('products')">See all <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="product-list" id="topProductsList">
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ═══════════════ USERS ═══════════════ -->
+      <section class="dash-section" id="section-users">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">User Management</h2>
+            <p class="section-sub">Manage all system users</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('user')">
+            <i class="fa-solid fa-plus"></i> Add User
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="userSearch" placeholder="Search users..." oninput="filterUsers()">
+            </div>
+            <div class="toolbar-right">
+              <select id="userRoleFilter" class="filter-select" onchange="filterUsers()">
+                <option value="">All Roles</option>
+                <option value="Admin">Admin</option>
+                <option value="Editor">Editor</option>
+                <option value="User">User</option>
+                <option value="Viewer">Viewer</option>
+              </select>
+              <select id="userStatusFilter" class="filter-select" onchange="filterUsers()">
+                <option value="">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table sortable-table" id="usersTable">
+              <thead>
+                <tr>
+                  <th class="sortable" data-col="name" onclick="sortTable('users','name',this)">
+                    Name <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" data-col="email" onclick="sortTable('users','email',this)">
+                    Email <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" data-col="role" onclick="sortTable('users','role',this)">
+                    Role <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" data-col="joinDate" onclick="sortTable('users','joinDate',this)">
+                    Joined <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination-wrap" id="usersPagination"></div>
+        </div>
+      </section>
+
+      <!-- ═══════════════ PRODUCTS ═══════════════ -->
+      <section class="dash-section" id="section-products">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Product Management</h2>
+            <p class="section-sub">Manage your product catalog</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('product')">
+            <i class="fa-solid fa-plus"></i> Add Product
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+            </div>
+            <div class="toolbar-right">
+              <select id="productCategoryFilter" class="filter-select" onchange="filterProducts()">
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Home">Home</option>
+                <option value="Sports">Sports</option>
+                <option value="Books">Books</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table sortable-table" id="productsTable">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th class="sortable" onclick="sortTable('products','name',this)">
+                    Name <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" onclick="sortTable('products','category',this)">
+                    Category <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" onclick="sortTable('products','price',this)">
+                    Price <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th class="sortable" onclick="sortTable('products','stock',this)">
+                    Stock <i class="fa-solid fa-sort sort-icon"></i>
+                  </th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination-wrap" id="productsPagination"></div>
+        </div>
+      </section>
+
+      <!-- ═══════════════ ORDERS ═══════════════ -->
+      <section class="dash-section" id="section-orders">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Order Management</h2>
+            <p class="section-sub">Track and manage all orders</p>
+          </div>
+          <div class="head-actions">
+            <button class="btn-outline"><i class="fa-solid fa-file-export"></i> Export</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="orderSearch" placeholder="Search orders..." oninput="filterOrders()">
+            </div>
+            <div class="toolbar-right">
+              <select id="orderStatusFilter" class="filter-select" onchange="filterOrders()">
+                <option value="">All Status</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Processing">Processing</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table sortable-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th class="sortable" onclick="sortTable('orders','id',this)">Order ID <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" onclick="sortTable('orders','customer',this)">Customer <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Product</th>
+                  <th class="sortable" onclick="sortTable('orders','amount',this)">Amount <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" onclick="sortTable('orders','date',this)">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination-wrap" id="ordersPagination"></div>
+        </div>
+      </section>
+
+      <!-- ═══════════════ SETTINGS ═══════════════ -->
+      <section class="dash-section" id="section-settings">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Settings</h2>
+            <p class="section-sub">Manage your account and preferences</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Profile Settings -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fa-solid fa-user-circle"></i>
+              <h3>Profile Settings</h3>
+            </div>
+            <div class="settings-avatar-section">
+              <div class="avatar-xl" id="settingsAvatar">AJ</div>
+              <div>
+                <div class="avatar-name" id="settingsAvatarName">Alex Johnson</div>
+                <div class="avatar-role" id="settingsAvatarRole">Super Admin</div>
+              </div>
+            </div>
+            <div class="settings-form">
+              <div class="settings-field">
+                <label>Full Name</label>
+                <input type="text" id="settingsName" placeholder="Your name" value="Alex Johnson">
+              </div>
+              <div class="settings-field">
+                <label>Email Address</label>
+                <input type="email" id="settingsEmail" placeholder="Your email" value="admin@adminx.com" disabled>
+                <span class="field-hint">Email cannot be changed in demo mode.</span>
+              </div>
+              <div class="settings-field">
+                <label>Role</label>
+                <input type="text" value="Super Admin" disabled>
+              </div>
+              <button class="btn-primary" onclick="saveProfile()">
+                <i class="fa-solid fa-floppy-disk"></i> Save Profile
+              </button>
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fa-solid fa-shield-halved"></i>
+              <h3>Security</h3>
+            </div>
+            <div class="settings-form">
+              <div class="settings-field">
+                <label>Current Password</label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-lock input-icon"></i>
+                  <input type="password" id="currentPw" placeholder="Current password">
+                  <button type="button" class="toggle-pw" onclick="toggleFieldPw('currentPw')"><i class="fa-regular fa-eye"></i></button>
+                </div>
+              </div>
+              <div class="settings-field">
+                <label>New Password</label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-lock input-icon"></i>
+                  <input type="password" id="newPw" placeholder="New password">
+                  <button type="button" class="toggle-pw" onclick="toggleFieldPw('newPw')"><i class="fa-regular fa-eye"></i></button>
+                </div>
+              </div>
+              <div class="settings-field">
+                <label>Confirm New Password</label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-lock input-icon"></i>
+                  <input type="password" id="confirmPw" placeholder="Confirm new password">
+                  <button type="button" class="toggle-pw" onclick="toggleFieldPw('confirmPw')"><i class="fa-regular fa-eye"></i></button>
+                </div>
+              </div>
+              <button class="btn-primary" onclick="changePassword()">
+                <i class="fa-solid fa-key"></i> Update Password
+              </button>
+            </div>
+          </div>
+
+          <!-- Appearance Settings -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <i class="fa-solid fa-palette"></i>
+              <h3>Appearance</h3>
+            </div>
+            <div class="settings-form">
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Dark Mode</div>
+                  <div class="toggle-sub">Switch between dark and light theme</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="darkModeToggle" checked onchange="toggleTheme()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Compact Sidebar</div>
+                  <div class="toggle-sub">Collapse sidebar to icon-only mode</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="compactSidebar" onchange="toggleSidebarCompact()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Email Notifications</div>
+                  <div class="toggle-sub">Receive email alerts for new orders</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="emailNotif" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Sound Alerts</div>
+                  <div class="toggle-sub">Play sound on new notification</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="soundAlert">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="settings-card danger-card">
+            <div class="settings-card-header">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <h3>Danger Zone</h3>
+            </div>
+            <div class="settings-form">
+              <p class="danger-text">These actions are irreversible. Please proceed with caution.</p>
+              <div class="danger-actions">
+                <button class="btn-danger-outline" onclick="alert('Demo: Session cleared. You would be logged out.')">
+                  <i class="fa-solid fa-right-from-bracket"></i> Clear All Sessions
+                </button>
+                <button class="btn-danger" onclick="alert('Demo: This would delete your account in a real system.')">
+                  <i class="fa-solid fa-trash-can"></i> Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ════════ MOBILE OVERLAY ════════ -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- ════════ USER MODAL ════════ -->
+  <div class="modal-overlay" id="userModalOverlay" onclick="closeModalIfOverlay(event,'userModal')">
+    <div class="modal" id="userModal">
+      <div class="modal-header">
+        <h3 id="userModalTitle">Add New User</h3>
+        <button class="modal-close" onclick="closeModal('userModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form">
+          <input type="hidden" id="userModalId">
+          <div class="modal-field">
+            <label>Full Name *</label>
+            <input type="text" id="mUserName" placeholder="Enter full name">
+            <span class="field-error" id="mUserNameErr"></span>
+          </div>
+          <div class="modal-field">
+            <label>Email Address *</label>
+            <input type="email" id="mUserEmail" placeholder="Enter email">
+            <span class="field-error" id="mUserEmailErr"></span>
+          </div>
+          <div class="form-row">
+            <div class="modal-field">
+              <label>Role *</label>
+              <select id="mUserRole">
+                <option value="">Select role</option>
+                <option value="Admin">Admin</option>
+                <option value="Editor">Editor</option>
+                <option value="User">User</option>
+                <option value="Viewer">Viewer</option>
+              </select>
+              <span class="field-error" id="mUserRoleErr"></span>
+            </div>
+            <div class="modal-field">
+              <label>Status</label>
+              <select id="mUserStatus">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeModal('userModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveUser()">
+          <i class="fa-solid fa-floppy-disk"></i> Save User
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PRODUCT MODAL ════════ -->
+  <div class="modal-overlay" id="productModalOverlay" onclick="closeModalIfOverlay(event,'productModal')">
+    <div class="modal" id="productModal">
+      <div class="modal-header">
+        <h3 id="productModalTitle">Add New Product</h3>
+        <button class="modal-close" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form">
+          <input type="hidden" id="productModalId">
+
+          <!-- Image Upload -->
+          <div class="modal-field">
+            <label>Product Image</label>
+            <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('productImage').click()">
+              <img id="imagePreview" src="" alt="" style="display:none">
+              <div class="upload-placeholder" id="uploadPlaceholder">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Click to upload image</span>
+                <small>PNG, JPG, WEBP up to 5MB</small>
+              </div>
+            </div>
+            <input type="file" id="productImage" accept="image/*" style="display:none" onchange="previewImage(event)">
+          </div>
+
+          <div class="modal-field">
+            <label>Product Name *</label>
+            <input type="text" id="mProdName" placeholder="Enter product name">
+            <span class="field-error" id="mProdNameErr"></span>
+          </div>
+          <div class="form-row">
+            <div class="modal-field">
+              <label>Category *</label>
+              <select id="mProdCategory">
+                <option value="">Select category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Home">Home</option>
+                <option value="Sports">Sports</option>
+                <option value="Books">Books</option>
+              </select>
+              <span class="field-error" id="mProdCatErr"></span>
+            </div>
+            <div class="modal-field">
+              <label>Price ($) *</label>
+              <input type="number" id="mProdPrice" placeholder="0.00" min="0" step="0.01">
+              <span class="field-error" id="mProdPriceErr"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="modal-field">
+              <label>Stock *</label>
+              <input type="number" id="mProdStock" placeholder="0" min="0">
+              <span class="field-error" id="mProdStockErr"></span>
+            </div>
+            <div class="modal-field">
+              <label>Status</label>
+              <select id="mProdStatus">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeModal('productModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveProduct()">
+          <i class="fa-solid fa-floppy-disk"></i> Save Product
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ CONFIRM DELETE MODAL ════════ -->
+  <div class="modal-overlay" id="confirmOverlay">
+    <div class="modal confirm-modal" id="confirmModal">
+      <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3>Delete Confirmation</h3>
+      <p id="confirmText">Are you sure you want to delete this item? This action cannot be undone.</p>
+      <div class="modal-footer">
+        <button class="btn-outline" onclick="closeConfirm()">Cancel</button>
+        <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TOAST ════════ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
