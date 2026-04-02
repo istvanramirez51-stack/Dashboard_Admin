@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!document.getElementById('sidebar')) return;
 
   // Auth guard
-  const session = localStorage.getItem('adminx_session');
+  const session = localStorage.getItem('SlashAdmin_session');
   if (!session) {
     window.location.href = 'index.html';
     return;
@@ -433,9 +433,9 @@ let orders = [];
 
 function initData() {
   // Load from localStorage or use demo data
-  users    = JSON.parse(localStorage.getItem('adminx_users'))    || [...DEMO_USERS];
-  products = JSON.parse(localStorage.getItem('adminx_products')) || [...DEMO_PRODUCTS];
-  orders   = JSON.parse(localStorage.getItem('adminx_orders'))   || [...DEMO_ORDERS];
+  users    = JSON.parse(localStorage.getItem('SlashAdmin_users'))    || [...DEMO_USERS];
+  products = JSON.parse(localStorage.getItem('SlashAdmin_products')) || [...DEMO_PRODUCTS];
+  orders   = JSON.parse(localStorage.getItem('SlashAdmin_orders'))   || [...DEMO_ORDERS];
 
   // Update stat cards
   updateStatCards();
@@ -445,9 +445,9 @@ function initData() {
   renderTopProducts();
 }
 
-function saveUsers()    { localStorage.setItem('adminx_users',    JSON.stringify(users));    }
-function saveProducts() { localStorage.setItem('adminx_products', JSON.stringify(products)); }
-function saveOrders()   { localStorage.setItem('adminx_orders',   JSON.stringify(orders));   }
+function saveUsers()    { localStorage.setItem('SlashAdmin_users',    JSON.stringify(users));    }
+function saveProducts() { localStorage.setItem('SlashAdmin_products', JSON.stringify(products)); }
+function saveOrders()   { localStorage.setItem('SlashAdmin_orders',   JSON.stringify(orders));   }
 
 function updateStatCards() {
   setText('statUsers',    users.length.toLocaleString());

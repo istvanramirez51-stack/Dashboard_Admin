@@ -72,7 +72,7 @@
             <div class="input-wrapper">
               <i class="fa-regular fa-envelope input-icon"></i>
               <input type="email" id="email" name="email" 
-                     placeholder="admin@adminx.com" autocomplete="email">
+                    placeholder="admin@adminx.com" autocomplete="email">
             </div>
             <span class="field-error" id="emailError"></span>
           </div>
@@ -83,7 +83,7 @@
             <div class="input-wrapper">
               <i class="fa-solid fa-lock input-icon"></i>
               <input type="password" id="password" name="password" 
-                     placeholder="Enter your password" autocomplete="current-password">
+                    placeholder="Enter your password" autocomplete="current-password">
               <button type="button" class="toggle-pw" id="togglePw" title="Toggle password">
                 <i class="fa-regular fa-eye" id="eyeIcon"></i>
               </button>
@@ -117,12 +117,9 @@
             <div><span>Email:</span> <code>admin@adminx.com</code></div>
             <div><span>Password:</span> <code>Admin123!</code></div>
           </div>
-          <button class="btn-autofill" onclick="autofillDemo()">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Autofill Demo
-          </button>
         </div>
 
-        <p class="login-footer">SlashAdmin © 2026 · All rights reserved</p>
+        <p class="login-footer">©Immanuel_2k 2026 · All rights reserved</p>
       </div>
     </div>
 
@@ -130,26 +127,23 @@
 
   <script src="script.js"></script>
   <script>
-    // Redirect if already logged in
-    if (localStorage.getItem('adminx_session')) {
-      window.location.href = 'dashboard.html';
-    }
+    // ── Redirect if already logged in ──
+    (function() {
+      var s = localStorage.getItem('SlashAdmin_session');
+      if (s) {
+        try {
+          var u = JSON.parse(s);
+          if (u && u.email) { window.location.href = 'dashboard.html'; }
+        } catch(e) {
+          localStorage.removeItem('SlashAdmin_session');
+        }
+      }
+    })();
 
-    function autofillDemo() {
-      document.getElementById('email').value = 'admin@adminx.com';
-      document.getElementById('password').value = 'Admin123!';
-      document.getElementById('email').dispatchEvent(new Event('input'));
-      document.getElementById('password').dispatchEvent(new Event('input'));
-    }
-
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      handleLogin();
-    });
-
+    // ── Toggle password visibility ──
     document.getElementById('togglePw').addEventListener('click', function() {
-      const pw = document.getElementById('password');
-      const icon = document.getElementById('eyeIcon');
+      var pw = document.getElementById('password');
+      var icon = document.getElementById('eyeIcon');
       if (pw.type === 'password') {
         pw.type = 'text';
         icon.className = 'fa-regular fa-eye-slash';
@@ -159,25 +153,31 @@
       }
     });
 
-    // Clear errors on input
-    ['email','password'].forEach(id => {
+    // ── Clear field errors on input ──
+    ['email', 'password'].forEach(function(id) {
       document.getElementById(id).addEventListener('input', function() {
         document.getElementById(id + 'Error').textContent = '';
         document.getElementById(id + 'Group').classList.remove('has-error');
       });
     });
 
-    function handleLogin() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      let valid = true;
+    // ── Form submit handler (di luar handleLogin!) ──
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleLogin();
+    });
 
-      // Clear errors
-      document.getElementById('emailError').textContent = '';
+    function handleLogin() {
+      var email    = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var valid    = true;
+
+      // Reset errors
+      document.getElementById('emailError').textContent    = '';
       document.getElementById('passwordError').textContent = '';
       document.getElementById('emailGroup').classList.remove('has-error');
       document.getElementById('passwordGroup').classList.remove('has-error');
-      document.getElementById('loginAlert').style.display = 'none';
+      document.getElementById('loginAlert').style.display  = 'none';
 
       // Validate email
       if (!email) {
@@ -199,40 +199,41 @@
 
       if (!valid) return;
 
-      // Show loading
-      document.getElementById('loginBtn').querySelector('.btn-text').style.display = 'none';
+      // Show loading state
+      document.getElementById('loginBtn').querySelector('.btn-text').style.display  = 'none';
       document.getElementById('loginBtn').querySelector('.btn-loader').style.display = 'inline-flex';
       document.getElementById('loginBtn').disabled = true;
 
-      // Simulate auth delay
+      // Simulate auth (1.5s delay)
       setTimeout(function() {
-        // Valid credentials
         if (email === 'admin@adminx.com' && password === 'Admin123!') {
-          const session = {
-            id: 1,
-            name: 'Immanuel_2k',
+          // ✅ Login berhasil
+          var sessionData = {
+            id: 12980111,
+            name: 'UserKamu',
             email: email,
             role: 'Super Admin',
             avatar: null,
             loginTime: new Date().toISOString(),
             theme: 'dark'
           };
-          localStorage.setItem('adminx_session', JSON.stringify(session));
-
+          localStorage.setItem('SlashAdmin_session', JSON.stringify(sessionData));
           document.getElementById('loginSuccess').style.display = 'flex';
           setTimeout(function() {
             window.location.href = 'dashboard.html';
           }, 1000);
         } else {
-          document.getElementById('loginBtn').querySelector('.btn-text').style.display = 'inline';
+          // ❌ Credentials salah
+          document.getElementById('loginBtn').querySelector('.btn-text').style.display  = 'inline';
           document.getElementById('loginBtn').querySelector('.btn-loader').style.display = 'none';
           document.getElementById('loginBtn').disabled = false;
           document.getElementById('loginAlert').style.display = 'flex';
           document.getElementById('loginAlertMsg').textContent = 'Invalid email or password. Please try again.';
-          
+
           // Shake animation
-          document.querySelector('.login-card-inner').classList.add('shake');
-          setTimeout(() => document.querySelector('.login-card-inner').classList.remove('shake'), 500);
+          var card = document.querySelector('.login-card-inner');
+          card.classList.add('shake');
+          setTimeout(function() { card.classList.remove('shake'); }, 500);
         }
       }, 1500);
     }
